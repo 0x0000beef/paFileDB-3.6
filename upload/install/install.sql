@@ -3,7 +3,7 @@ CREATE TABLE `##PREFIX##adminnews` (
   `subject` varchar(150) NOT NULL default '',
   `text` text NOT NULL,
   PRIMARY KEY  (`date`)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 
 CREATE TABLE `##PREFIX##cat` (
   `cat_id` int(5) NOT NULL auto_increment,
@@ -14,7 +14,7 @@ CREATE TABLE `##PREFIX##cat` (
   `cat_order` int(5) default NULL,
   `cat_sort` varchar(25) NOT NULL default '',
   PRIMARY KEY  (`cat_id`)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 
 CREATE TABLE `##PREFIX##comments` (
   `comment_id` int(10) NOT NULL auto_increment,
@@ -25,20 +25,20 @@ CREATE TABLE `##PREFIX##comments` (
   `comment_ip` varchar(15) NOT NULL default '',
   `comment_text` text NOT NULL,
   PRIMARY KEY  (`comment_id`)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 
 CREATE TABLE `##PREFIX##custom` (
   `custom_id` int(5) NOT NULL auto_increment,
   `custom_name` varchar(50) NOT NULL default '',
   `custom_description` varchar(150) NOT NULL default '',
   PRIMARY KEY  (`custom_id`)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 
 CREATE TABLE `##PREFIX##customdata` (
   `customdata_file` int(5) NOT NULL default '0',
   `customdata_custom` int(5) NOT NULL default '0',
   `data` text NOT NULL
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 
 CREATE TABLE `##PREFIX##emaillog` (
   `e_id` int(6) NOT NULL auto_increment,
@@ -52,7 +52,7 @@ CREATE TABLE `##PREFIX##emaillog` (
   `e_subject` text NOT NULL,
   `e_message` text NOT NULL,
   PRIMARY KEY  (`e_id`)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 
 CREATE TABLE `##PREFIX##files` (
   `file_id` int(10) NOT NULL auto_increment,
@@ -76,14 +76,14 @@ CREATE TABLE `##PREFIX##files` (
   `file_totalvotes` int(10) NOT NULL default '0',
   `file_tags` text NOT NULL,
   PRIMARY KEY  (`file_id`)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 
 CREATE TABLE `##PREFIX##license` (
   `license_id` int(5) NOT NULL auto_increment,
   `license_name` text,
   `license_text` text,
   PRIMARY KEY  (`license_id`)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 
 CREATE TABLE `##PREFIX##settings` (
   `id` int(1) NOT NULL auto_increment,
@@ -118,7 +118,7 @@ CREATE TABLE `##PREFIX##settings` (
   `display_tags` int(1) NOT NULL default '0',
   `tag_cloud` text NOT NULL,
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 
 CREATE TABLE `##PREFIX##users` (
   `user_userid` int(6) NOT NULL auto_increment,
@@ -129,6 +129,6 @@ CREATE TABLE `##PREFIX##users` (
   `user_emailvalidation` varchar(32) NOT NULL default '',
   `user_passvalidation` varchar(32) NOT NULL default '',
   PRIMARY KEY  (`user_userid`)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 
 INSERT INTO `##PREFIX##settings` (`id`, `dbname`, `dburl`, `topnumber`, `homeurl`, `timeoffset`, `timezone`, `skin`, `stats`, `lang`, `viewall`, `showss`, `date_format`, `time_format`, `dropdown`, `enable_email`, `perpage`, `enable_report`, `sort_override`, `quickdl`, `dbstats`, `fromemail`, `validateemail`, `enable_comments`, `guest_comments`, `enable_registration`, `comments_perpage`, `require_registration`, `newest_news`, `display_tags`, `tag_cloud`) VALUES (1, 'My Files', '', 10, 'http://www.mysite.com', 0, 'Central Time', 'default', 1, 'english', 1, 1, '%b %d&#44; %Y', '%I:%M %p', '', 1, 10, 1, 1, 1, 0, 'noreply@mysite.com', 1, 1, 0, 1, 10, 0, 0, 1, '');
