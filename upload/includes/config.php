@@ -18,16 +18,16 @@
 $dbDriver = "mysql";
 
 /* Database server to connect to. */
-$dbServer = "mysql.zzz.com.ua";
+$dbServer = "dbserver";
 
 /* Username to use to connect to the database. */
-$dbUser = "leroot";
+$dbUser = "dbuser";
 
 /* Password for the above username. */
-$dbPass = "981NdrJQ";
+$dbPass = "dbpass";
 
 /* The name of the database to use. */
-$dbName = "iamherefortesting";
+$dbName = "dbname";
 
 /* Table name prefix. Anything entered here will be added before the table name, allowing multiple installations of paFileDB in the same database */
 $dbPrefix = "pafiledb_";
