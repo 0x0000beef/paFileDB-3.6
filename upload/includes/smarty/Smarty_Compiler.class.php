@@ -54,6 +54,11 @@ class Smarty_Compiler extends Smarty {
     var $_num_const_regexp      =   null;
     var $_dvar_guts_regexp      =   null;
     var $_dvar_regexp           =   null;
+    var $_dvar_math_regexp      =   null;
+    var $_dvar_math_var_regexp  =   null;
+    var $_obj_restricted_param_regexp = null;
+    var $_obj_single_param_regexp     = null;
+    var $_param_regexp          =   null;
     var $_cvar_regexp           =   null;
     var $_svar_regexp           =   null;
     var $_avar_regexp           =   null;
@@ -70,6 +75,7 @@ class Smarty_Compiler extends Smarty {
     var $_nocache_count         =   0;
     var $_cache_serial          =   null;
     var $_cache_include         =   null;
+    var $_plugins_code          =   null;
 
     var $_strip_depth           =   0;
     var $_additional_newline    =   "\n";
@@ -78,7 +84,7 @@ class Smarty_Compiler extends Smarty {
     /**
      * The class constructor.
      */
-    function Smarty_Compiler()
+    function __construct()
     {
         // matches double quoted strings:
         // "foobar"
@@ -262,12 +268,12 @@ class Smarty_Compiler extends Smarty {
         reset($this->_folded_blocks);
 
         /* replace special blocks by "{php}" */
-        $source_content = preg_replace($search.'e', "'"
-                                       . $this->_quote_replace($this->left_delimiter) . 'php'
-                                       . "' . str_repeat(\"\n\", substr_count('\\0', \"\n\")) .'"
-                                       . $this->_quote_replace($this->right_delimiter)
-                                       . "'"
-                                       , $source_content);
+        $source_content = preg_replace_callback($search, function ($m) {
+            /* fold special blocks back into a {php} tag, keeping the same
+               number of lines so that line numbers stay accurate */
+            return $this->left_delimiter . 'php' . $this->right_delimiter
+                 . str_repeat("\n", substr_count($m[0], "\n"));
+        }, $source_content);
 
         /* Gather all template tags. */
         preg_match_all("~{$ldq}\s*(.*?)\s*{$rdq}~s", $source_content, $_match);
@@ -387,7 +393,7 @@ class Smarty_Compiler extends Smarty {
         }
 
         // put header at the top of the compiled template
-        $template_header = "<?php /* Smarty version ".$this->_version.", created on ".strftime("%Y-%m-%d %H:%M:%S")."\n";
+        $template_header = "<?php /* Smarty version ".$this->_version.", created on ".date("Y-m-d H:i:s")."\n";
         $template_header .= "         compiled from ".strtr(urlencode($resource_name), array('%2F'=>'/', '%3A'=>':'))." */ ?>\n";
 
         /* Emit code to load needed plugins. */
@@ -546,7 +552,8 @@ class Smarty_Compiler extends Smarty {
 
             case 'php':
                 /* handle folded tags replaced by {php} */
-                list(, $block) = each($this->_folded_blocks);
+                $block = current($this->_folded_blocks);
+                next($this->_folded_blocks);
                 $this->_current_line_no += substr_count($block[0], "\n");
                 /* the number of matched elements in the regexp in _compile_file()
                    determins the type of folded tag that was found */

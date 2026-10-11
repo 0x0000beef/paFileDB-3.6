@@ -56,7 +56,7 @@ $smarty->assign('version', $version);
 require('./includes/auth.php');
 
 if (($settings[0]['require_registration'] == 1 && $userinfo[0]['user_userid'] == 0) && ($act != "login" && $act != "register" && $act != "lostpw")) {
-	$logreg = '<br /><br /><a href="'.$settings[0]['dburl'].'/index.php?act=login&qs='.urlencode($_SERVER['QUERY_STRING']).'">'.lang('login').'</a> - <a href="'.$settings[0]['dburl'].'/index.php?act=register">'.lang('register').'</a>';
+	$logreg = '<br /><br /><a href="'.$settings[0]['dburl'].'/index.php?act=login&qs='.urlencode(($_SERVER['QUERY_STRING'] ?? '')).'">'.lang('login').'</a> - <a href="'.$settings[0]['dburl'].'/index.php?act=register">'.lang('register').'</a>';
 	smarty_error(lang('login_view').$logreg);
 }
 

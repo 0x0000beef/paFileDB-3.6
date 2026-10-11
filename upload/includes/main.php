@@ -22,7 +22,7 @@ if ($settings[0]['dbstats'] == 1) {
 	} else {
 		$avgRating = 0;
 	}
-	$stats = str_replace(array('%RATING%', '%TOTALFILES%', '%TOTALDLS%'), array($avgRating, $stats[0][2], number_format($stats[0][3])), array(lang('stats_avgrating'), lang('stats_totalfiles'), lang('stats_totaldls')));
+	$stats = str_replace(array('%RATING%', '%TOTALFILES%', '%TOTALDLS%'), array($avgRating, $stats[0][2], number_format((float)$stats[0][3])), array(lang('stats_avgrating'), lang('stats_totalfiles'), lang('stats_totaldls')));
 	$newest = $db->GetArray("SELECT file_id, file_name, file_time FROM ".$dbPrefix."files ORDER BY file_time DESC LIMIT 0,1");
 	$smarty->assign('stats', $stats);
 	$smarty->assign('newest', $newest[0]);

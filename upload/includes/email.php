@@ -18,7 +18,7 @@ if ($settings[0]['enable_email'] == 0) {
 }
 
 //Get file info
-$file = $db->GetArray("SELECT * FROM ".$dbPrefix."files WHERE file_id = ".intval($_GET['id']));
+$file = $db->GetArray("SELECT * FROM ".$dbPrefix."files WHERE file_id = ".intval(($_GET['id'] ?? '')));
 if (count($file) == 0) {
     smarty_error(lang('file_exist'));
 }
@@ -31,34 +31,34 @@ if (isset($_GET['process'])) {
     }
     
     //Make sure the "from" address is valid
-        if (!eregi('^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.([a-zA-Z]{2,4})$', $_POST['fromemail'])) {
+        if (!preg_match('~^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.([a-zA-Z]{2,4})$~i', ($_POST['fromemail'] ?? ''))) {
             smarty_error(lang('emailinvalid'));
         }
-        if (!eregi('^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.([a-zA-Z]{2,4})$', $_POST['toemail'])) {
+        if (!preg_match('~^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.([a-zA-Z]{2,4})$~i', ($_POST['toemail'] ?? ''))) {
             smarty_error(lang('emailinvalid'));
         }
-        $message = 'Dear '.$_POST['toname'].":\n\n";
-        $message .= $_POST['fromname'].'('.$_POST['fromemail'].') sent this file to you from '.$settings[0]['dbname'].".\n\n";
+        $message = 'Dear '.($_POST['toname'] ?? '').":\n\n";
+        $message .= $_POST['fromname'].'('.($_POST['fromemail'] ?? '').') sent this file to you from '.$settings[0]['dbname'].".\n\n";
         $message .= "File: ".$file['file_name']."\n";
         $message .= "Description: ".$file['file_desc']."\n";
         $message .= "Please visit this link to download the file:\n";
-        $message .= $settings[0]['dburl'].'/index.php?act=view&id='.$_GET['id']."\n\n";
+        $message .= $settings[0]['dburl'].'/index.php?act=view&id='.($_GET['id'] ?? '')."\n\n";
         $message .= $_POST['fromname']." has included this message:\n";
         $message .= $_POST['message']."\n\n";
         $message .= "Please note that ".$settings[0]['dbname']." cannot be held responsible for the contents of this message. To report abuse, please visit ".$settings[0]['dburl'];
-        $to = array(array("name" => $_POST['toname'], "address" => $_POST['toemail']));
-        pafiledb_mail($_POST['fromname'], $_POST['fromemail'], $to, $_POST['fromname'].' wants you to check out a file!', $message);
+        $to = array(array("name" => ($_POST['toname'] ?? ''), "address" => ($_POST['toemail'] ?? '')));
+        pafiledb_mail(($_POST['fromname'] ?? ''), ($_POST['fromemail'] ?? ''), $to, ($_POST['fromname'] ?? '').' wants you to check out a file!', $message);
     
-        smarty_redirect(lang('email_sent'), 'index.php?act=view&amp;id='.$_GET['id']);
+        smarty_redirect(lang('email_sent'), 'index.php?act=view&amp;id='.($_GET['id'] ?? ''));
 }
 
-$smarty->assign('id', $_GET['id']);
+$smarty->assign('id', ($_GET['id'] ?? ''));
 //Fetch the category info from the database
 // Generate the navbar. We're using the dropdown cache to save
 // system resources.
 $navbar = array();
 $navbar[] = array('name' => lang('emailfriend'), 'url' => '');
-$navbar[] = array('name' => $file['file_name'], 'url' => '?act=view&amp;id='.intval($_GET['id']));
+$navbar[] = array('name' => $file['file_name'], 'url' => '?act=view&amp;id='.intval(($_GET['id'] ?? '')));
 $allcats = unserialize($settings[0]['dropdown']);
 $tempcat = $file['file_catid'];
 $templvl = -1; // 0 = start. We need to identify that this hasn't been set so -1 works :)

@@ -22,11 +22,11 @@ if ($settings[0]['sort_override'] == 1) {
 	if (isset($_GET['sort'])) {
 		$sort[0] = $_POST['sortby'];
 		$sort[1] = $_POST['order'];
-		setcookie('pafiledb_sort', $_POST['sortby'].'|'.$_POST['order'], time()+63072000);
+		setcookie('pafiledb_sort', ($_POST['sortby'] ?? '').'|'.($_POST['order'] ?? ''), time()+63072000);
 	}
 	//No options submitted, pull from existing cookie if it exists
 	else if (isset($_COOKIE['pafiledb_sort'])) {
-		$sort = explode('|', $_COOKIE['pafiledb_sort']);
+		$sort = explode('|', ($_COOKIE['pafiledb_sort'] ?? ''));
 	}
 	//Prevent SQL injections and whatnot by making sure the user's sort optiosn only match what's allowed
 	if (!in_array($sort[0], array('name', 'dls', 'time')) OR !in_array($sort[1], array('DESC', 'ASC'))) {
@@ -39,7 +39,7 @@ if ($settings[0]['sort_override'] == 1) {
 $files = $db->GetArray("SELECT * FROM ".$dbPrefix."files ORDER BY file_pin DESC, file_".$sort[0]." ".$sort[1]);
 
 
-if (!isset($_GET['start'])) { $start = 1; } else { $start = intval($_GET['start']); }
+if (!isset($_GET['start'])) { $start = 1; } else { $start = intval(($_GET['start'] ?? '')); }
 
 $smarty->assign('navbar', array(array('name' => $settings[0]['dbname'], 'url' => ''), array('name' => lang('viewallfiles'), 'url' => '?act=viewall')));
 $smarty->assign('title', $settings[0]['dbname']." &raquo; ".lang('viewallfiles'));
@@ -68,6 +68,7 @@ $smarty->assign('order_name', array(lang('descending'), lang('ascending')));
 $smarty->assign('cursort', $sort[0]);
 $smarty->assign('curorder', $sort[1]);
 $smarty->assign('files', $f);
+$smarty->assign('pinned', array()); //no pinned-files list is built any more; keeps the template from reading an unset variable
 $smarty->assign('pages', $pages);
 $smarty->assign('count', count($files));
 

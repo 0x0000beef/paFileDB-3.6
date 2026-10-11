@@ -554,6 +554,13 @@ class Smarty
     var $_cache_include = null;
 
     /**
+     * info about the current compiled include
+     *
+     * @var array
+     */
+    var $_cache_include_info = null;
+
+    /**
      * indicate if the current code is used in a compiled
      * include
      *
@@ -565,9 +572,9 @@ class Smarty
     /**
      * The class constructor.
      */
-    function Smarty()
+    function __construct()
     {
-      $this->assign('SCRIPT_NAME', isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME']
+      $this->assign('SCRIPT_NAME', isset($_SERVER['SCRIPT_NAME']) ? ($_SERVER['SCRIPT_NAME'] ?? '')
                     : @$GLOBALS['HTTP_SERVER_VARS']['SCRIPT_NAME']);
     }
 
@@ -1124,7 +1131,7 @@ class Smarty
                ? $this->error_reporting : error_reporting() & ~E_NOTICE);
 
         if (!$this->debugging && $this->debugging_ctrl == 'URL') {
-            $_query_string = $this->request_use_auto_globals ? $_SERVER['QUERY_STRING'] : $GLOBALS['HTTP_SERVER_VARS']['QUERY_STRING'];
+            $_query_string = $this->request_use_auto_globals ? ($_SERVER['QUERY_STRING'] ?? '') : $GLOBALS['HTTP_SERVER_VARS']['QUERY_STRING'];
             if (@strstr($_query_string, $this->_smarty_debug_id)) {
                 if (@strstr($_query_string, $this->_smarty_debug_id . '=on')) {
                     // enable debugging for this browser session
@@ -1139,7 +1146,7 @@ class Smarty
                     $this->debugging = true;
                 }
             } else {
-                $this->debugging = (bool)($this->request_use_auto_globals ? @$_COOKIE['SMARTY_DEBUG'] : @$GLOBALS['HTTP_COOKIE_VARS']['SMARTY_DEBUG']);
+                $this->debugging = (bool)($this->request_use_auto_globals ? @($_COOKIE['SMARTY_DEBUG'] ?? '') : @$GLOBALS['HTTP_COOKIE_VARS']['SMARTY_DEBUG']);
             }
         }
 

@@ -13,8 +13,8 @@
 ***************************************************************/
 
 if (isset($_GET['process'])) {
-    $smarty->assign('navbar', array(array('name' => $settings[0]['dbname'], 'url' => ''), array('name' => lang('search'), 'url' => '?act=search'), array('name' => lang('search_results').': '.$_POST['query'], 'url' => '?act=search')));
-    $smarty->assign('title', $settings[0]['dbname'].' &raquo; '.lang('search').' &raquo; '.lang('search_results').': '.$_POST['query']);
+    $smarty->assign('navbar', array(array('name' => $settings[0]['dbname'], 'url' => ''), array('name' => lang('search'), 'url' => '?act=search'), array('name' => lang('search_results').': '.($_POST['query'] ?? ''), 'url' => '?act=search')));
+    $smarty->assign('title', $settings[0]['dbname'].' &raquo; '.lang('search').' &raquo; '.lang('search_results').': '.($_POST['query'] ?? ''));
     $smarty->assign('act', 'process');
     
     //Make sure the input is valid
@@ -27,17 +27,17 @@ if (isset($_GET['process'])) {
     
     //Build the WHERE clause for the query
     $searchin = array();
-    foreach ($_POST['search_in'] as $s) {
+    foreach (($_POST['search_in'] ?? '') as $s) {
     	if (in_array($s, $allowed_fields)) {
-    		$searchin[] = $s." LIKE '%".xhtml_convert($_POST['query'])."%'";
+    		$searchin[] = $s." LIKE '%".xhtml_convert(($_POST['query'] ?? ''))."%'";
     	}
     }
     $searchin = implode(' OR ', $searchin);
     
     //Run the query
-    $results = $db->GetArray("SELECT * FROM ".$dbPrefix."files WHERE (".$searchin.") AND file_catid IN (".implode(',', $_POST['categories']).")");
+    $results = $db->GetArray("SELECT * FROM ".$dbPrefix."files WHERE (".$searchin.") AND file_catid IN (".implode(',', ($_POST['categories'] ?? '')).")");
     if (count($results) == 0) {
-        smarty_error(str_replace('{keyword}', $_POST['query'], lang('no_results')));
+        smarty_error(str_replace('{keyword}', ($_POST['query'] ?? ''), lang('no_results')));
     }
     $smarty->assign('results', $results);
 } else {

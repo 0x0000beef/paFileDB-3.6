@@ -108,7 +108,7 @@ function pafiledb_mail($fromname, $fromaddress, $to, $subject, $message)
     }
     $toaddress = substr($toaddress, 0, strlen($toaddress)-2);
 
-    $db->Execute("INSERT INTO ".$dbPrefix."emaillog (e_ip, e_fromname, e_fromaddress, e_toaddress, e_headers, e_subject, e_date, e_message) VALUES ('".$_SERVER['REMOTE_ADDR']."', '".xhtml_convert($fromname)."', '".xhtml_convert($fromaddress)."', '".xhtml_convert($toaddress)."', '".xhtml_convert($headers)."', '".xhtml_convert($subject)."', ".time().", '".xhtml_convert($message)."')");
+    $db->Execute("INSERT INTO ".$dbPrefix."emaillog (e_ip, e_fromname, e_fromaddress, e_toaddress, e_headers, e_subject, e_date, e_message) VALUES ('".($_SERVER['REMOTE_ADDR'] ?? '')."', '".xhtml_convert($fromname)."', '".xhtml_convert($fromaddress)."', '".xhtml_convert($toaddress)."', '".xhtml_convert($headers)."', '".xhtml_convert($subject)."', ".time().", '".xhtml_convert($message)."')");
     return mail($toaddress, $subject, $message, $headers);
 }
 
@@ -123,7 +123,7 @@ function pafiledb_mail($fromname, $fromaddress, $to, $subject, $message)
 function dropDown($cats, $onlyid = false) {
   global $smarty;
   $drop = '<select name="menu1" onchange="MM_jumpMenu(\'parent\',this,0)">'."\n";
-  $drop .= '<option value="'.substr($_SERVER['REQUEST_URI'], 0, strrpos($_SERVER['REQUEST_URI'], '?')+1).xhtml_convert(substr($_SERVER['REQUEST_URI'], strrpos($_SERVER['REQUEST_URI'], '?')+1)).'">'.lang('categories').'</option>';
+  $drop .= '<option value="'.substr(($_SERVER['REQUEST_URI'] ?? ''), 0, strrpos(($_SERVER['REQUEST_URI'] ?? ''), '?')+1).xhtml_convert(substr(($_SERVER['REQUEST_URI'] ?? ''), strrpos(($_SERVER['REQUEST_URI'] ?? ''), '?')+1)).'">'.lang('categories').'</option>';
 
   if (empty($cats)) {
     $drop .= '</select>';
@@ -253,10 +253,11 @@ function rebuild_tags() {
   *  $text: The text to convert
   */
 function xhtml_convert($text) {
+    $text = (string)$text;
     if (lang('local_charset_htmlent') != 'bypass')
 
     {
-        $text = htmlentities($text, ENT_QUOTES, lang('local_charset_htmlent'));
+        $text = htmlentities((string)$text, ENT_QUOTES, lang('local_charset_htmlent'));
     }
     $text = str_replace(',', '&#44;', $text);
 
@@ -327,7 +328,7 @@ function check_input($a, $excep=array()) {
   * $s: The string to escape quote on
   */
 function smart_slashes($s) {
-	if (get_magic_quotes_gpc()) {
+	if (false) { // get_magic_quotes_gpc() removed in PHP 8.0
 		stripslashes($s);
 	} 
 	return addslashes($s);

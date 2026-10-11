@@ -25,27 +25,27 @@ if (isset($_GET['process'])) {
     
     
     //Check e-mail address *yawn*
-    if (!eregi('^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.([a-zA-Z]{2,4})$', $_POST['email'])) {
+    if (!preg_match('~^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.([a-zA-Z]{2,4})$~i', ($_POST['email'] ?? ''))) {
         smarty_error(lang('emailinvalid'));
     }
     
-    if(md5($_POST['current_password']) != $userinfo[0]['user_password']) {
+    if(md5(($_POST['current_password'] ?? '')) != $userinfo[0]['user_password']) {
         smarty_error(lang('wrongpass'));
     }
     
-    if ($_POST['new_password'] != $_POST['new_confirm']) {
+    if (($_POST['new_password'] ?? '') != ($_POST['new_confirm'] ?? '')) {
         smarty_error(lang('nomatch'));
     }
     
     if (!empty($_POST['new_password'])) {
-        $passUpdate = ", user_password = '".md5($_POST['new_password'])."'";
-        setcookie('pafiledb_pass', md5($_POST['new_password']), time()+31536000);
+        $passUpdate = ", user_password = '".md5(($_POST['new_password'] ?? ''))."'";
+        setcookie('pafiledb_pass', md5(($_POST['new_password'] ?? '')), time()+31536000);
     } else {
     	$passUpdate = "";
     }
     
     //Update DB *yawn*
-    $db->Execute("UPDATE ".$dbPrefix."users SET user_email = '".$_POST['email']."'".$passUpdate." WHERE user_userid = ".$userinfo[0]['user_userid']);
+    $db->Execute("UPDATE ".$dbPrefix."users SET user_email = '".($_POST['email'] ?? '')."'".$passUpdate." WHERE user_userid = ".$userinfo[0]['user_userid']);
     smarty_redirect(lang('myoptions_redir'), 'index.php');
     
 } else {

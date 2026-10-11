@@ -42,19 +42,19 @@ require('./includes/auth.php');
 
 if ($act == "rate") {
 	if (!isset($_GET['file']) OR !isset($_GET['rating'])) { die("Invalid"); }
-	if ($_GET['rating'] > 0 && $_GET['rating'] <= 5 && intval($_GET['rating']) == true) {
+	if (($_GET['rating'] ?? '') > 0 && ($_GET['rating'] ?? '') <= 5 && intval(($_GET['rating'] ?? '')) == true) {
 		$rated_array = array();
     	if (isset($_COOKIE['pafiledb_rate'])) {
-        	$rated_array = explode('|', $_COOKIE['pafiledb_rate']);
-        	if (in_array($_GET['file'], $rated_array)) {
+        	$rated_array = explode('|', ($_COOKIE['pafiledb_rate'] ?? ''));
+        	if (in_array(($_GET['file'] ?? ''), $rated_array)) {
             	//die("Already rated");
         	}
     	}
-    	$db->Execute("UPDATE ".$dbPrefix."files SET file_rating = file_rating + ".intval($_GET['rating']).", file_totalvotes = file_totalvotes + 1 WHERE file_id = ".intval($_GET['file']));
+    	$db->Execute("UPDATE ".$dbPrefix."files SET file_rating = file_rating + ".intval(($_GET['rating'] ?? '')).", file_totalvotes = file_totalvotes + 1 WHERE file_id = ".intval(($_GET['file'] ?? '')));
     
     	$rated_array[] = $_GET['file'];
     	setcookie('pafiledb_rate', implode('|', $rated_array), time()+63072000);
-    	$file = $db->GetArray("SELECT * FROM ".$dbPrefix."files WHERE file_id = ".intval($_GET['file']));
+    	$file = $db->GetArray("SELECT * FROM ".$dbPrefix."files WHERE file_id = ".intval(($_GET['file'] ?? '')));
 		$file = $file[0];
     	/* Calculate the file rating and round it off. The if/else
 		statement prevents a divide by zero. If the number of ratings 
@@ -118,16 +118,16 @@ if ($act == "rate") {
 	if (!$enableComments) { exit(); }
 	
 	//Strip out bad HTML
-	$commentText = strip_tags($_POST['comment'], "<p><strong><b><em><i><strike><u><font><ul><li><ol><blockquote><a><img><sub><sup>");
+	$commentText = strip_tags(($_POST['comment'] ?? ''), "<p><strong><b><em><i><strike><u><font><ul><li><ol><blockquote><a><img><sub><sup>");
 	include('./includes/class.inputfilter.php');
 	$htmlFilter = new InputFilter(array(), array(), 1, 1);
 	$commentText = $htmlFilter->process($commentText);
-	if ($_POST['tMCEused'] == 0) {
+	if (($_POST['tMCEused'] ?? '') == 0) {
 		$commentText = str_replace("\n", "<br />", $commentText);
 	}
 	
 	//Insert into DB
-	$db->Execute("INSERT INTO ".$dbPrefix."comments (comment_userid, comment_fileid, comment_time, comment_subject, comment_ip, comment_text) VALUES (".$userinfo[0]['user_userid'].", ".intval($_GET['file']).", ".time().",  '".xhtml_convert($_POST['subject'])."', '".$_SERVER['REMOTE_ADDR']."', '".smart_slashes($commentText)."')");
+	$db->Execute("INSERT INTO ".$dbPrefix."comments (comment_userid, comment_fileid, comment_time, comment_subject, comment_ip, comment_text) VALUES (".$userinfo[0]['user_userid'].", ".intval(($_GET['file'] ?? '')).", ".time().",  '".xhtml_convert(($_POST['subject'] ?? ''))."', '".($_SERVER['REMOTE_ADDR'] ?? '')."', '".smart_slashes($commentText)."')");
 	$newID = $db->Insert_ID();
 	
 	//Get the new comment from the DB and display the comment template and javascript will handle the rest
@@ -141,21 +141,21 @@ if ($act == "rate") {
 	if ($userinfo[0]['user_status'] < 4) {
 		exit();
 	}
-	$db->Execute("DELETE FROM ".$dbPrefix."comments WHERE comment_id = ".intval($_GET['comment']));
+	$db->Execute("DELETE FROM ".$dbPrefix."comments WHERE comment_id = ".intval(($_GET['comment'] ?? '')));
 	
 	//We're echoing out the comment ID to Javascript so it knows which DIV to hide
-	echo $_GET['comment'];
+	echo ($_GET['comment'] ?? '');
 
 } else if ($act == "editcomment") {
 
 	//Get the comment info to fill in the form fields
-	$comment = $db->GetArray("SELECT * FROM ".$dbPrefix."comments LEFT JOIN ".$dbPrefix."users ON ".$dbPrefix."comments.comment_userid = ".$dbPrefix."users.user_userid WHERE comment_id = ".intval($_GET['comment']));
+	$comment = $db->GetArray("SELECT * FROM ".$dbPrefix."comments LEFT JOIN ".$dbPrefix."users ON ".$dbPrefix."comments.comment_userid = ".$dbPrefix."users.user_userid WHERE comment_id = ".intval(($_GET['comment'] ?? '')));
 	
 	//Figure out if we're allowed to edit or not
 	if (($userinfo[0]['user_userid'] != $comment[0]['user_userid'] && $userinfo[0]['user_status'] < 4) || $userinfo[0]['user_userid'] == 0) {
 		smarty_error(lang('perm_denied'));
 	}
-	if ($_GET['tMCEused'] == 0) {
+	if (($_GET['tMCEused'] ?? '') == 0) {
 		$comment[0]['comment_text'] = str_replace("<br />", "\n", $comment[0]['comment_text']);
 		
 	}
@@ -167,15 +167,15 @@ if ($act == "rate") {
 } else if ($act == "savecomment") {
 	
 	//Check to see if we're allowed to edit
-	$comment = $db->GetArray("SELECT * FROM ".$dbPrefix."comments LEFT JOIN ".$dbPrefix."users ON ".$dbPrefix."comments.comment_userid = ".$dbPrefix."users.user_userid WHERE comment_id = ".intval($_GET['id']));
+	$comment = $db->GetArray("SELECT * FROM ".$dbPrefix."comments LEFT JOIN ".$dbPrefix."users ON ".$dbPrefix."comments.comment_userid = ".$dbPrefix."users.user_userid WHERE comment_id = ".intval(($_GET['id'] ?? '')));
 	if (($userinfo[0]['user_userid'] != $comment[0]['user_userid'] && $userinfo[0]['user_status'] < 4) || $userinfo[0]['user_userid'] == 0) {
 		smarty_error(lang('perm_denied'));
 	}
 	
 	
 	//Strip out bad HTML
-	$commentText = strip_tags($_POST['comment'], "<p><br><strong><b><em><i><strike><u><font><ul><li><ol><blockquote><a><img><sub><sup>");
-	if ($_POST['tMCEused'] == 0) {
+	$commentText = strip_tags(($_POST['comment'] ?? ''), "<p><br><strong><b><em><i><strike><u><font><ul><li><ol><blockquote><a><img><sub><sup>");
+	if (($_POST['tMCEused'] ?? '') == 0) {
 		$commentText = str_replace("\n", "<br />", $commentText);
 	}
 	include('./includes/class.inputfilter.php');
@@ -183,8 +183,8 @@ if ($act == "rate") {
 	$commentText = $htmlFilter->process($commentText);
 	
 	//Update, and echo out updated comment so JS can display it
-	$db->Execute("UPDATE ".$dbPrefix."comments SET comment_subject = '".xhtml_convert($_POST['subject'])."', comment_text = '".smart_slashes($commentText)."' WHERE comment_id = ".intval($_GET['id']));
-	$comment[0]['comment_subject'] = xhtml_convert($_POST['subject']);
+	$db->Execute("UPDATE ".$dbPrefix."comments SET comment_subject = '".xhtml_convert(($_POST['subject'] ?? ''))."', comment_text = '".smart_slashes($commentText)."' WHERE comment_id = ".intval(($_GET['id'] ?? '')));
+	$comment[0]['comment_subject'] = xhtml_convert(($_POST['subject'] ?? ''));
 	$comment[0]['comment_text'] = $commentText;
 	$smarty->assign('c', $comment[0]);
 	$smarty->assign('hidediv', true);

@@ -16,7 +16,7 @@
 
 
 //Get the category info; we need the category name for page title and navbar
-$category = $db->GetArray("SELECT * FROM ".$dbPrefix."cat WHERE cat_id = ".intval($_GET['id']));
+$category = $db->GetArray("SELECT * FROM ".$dbPrefix."cat WHERE cat_id = ".intval(($_GET['id'] ?? '')));
 if (count($category) == 0) {
     smarty_error(lang('category_exist'));
 }
@@ -29,11 +29,11 @@ if ($settings[0]['sort_override'] == 1) {
 	if (isset($_GET['sort'])) {
 		$sort[0] = $_POST['sortby'];
 		$sort[1] = $_POST['order'];
-		setcookie('pafiledb_sort', $_POST['sortby'].'|'.$_POST['order'], time()+63072000);
+		setcookie('pafiledb_sort', ($_POST['sortby'] ?? '').'|'.($_POST['order'] ?? ''), time()+63072000);
 	}
 	//No options submitted, pull from existing cookie if it exists
 	else if (isset($_COOKIE['pafiledb_sort'])) {
-		$sort = explode('|', $_COOKIE['pafiledb_sort']);
+		$sort = explode('|', ($_COOKIE['pafiledb_sort'] ?? ''));
 	}
 	//Prevent SQL injections and whatnot by making sure the user's sort optiosn only match what's allowed
 	if (!in_array($sort[0], array('name', 'dls', 'time')) OR !in_array($sort[1], array('DESC', 'ASC'))) {
@@ -43,14 +43,14 @@ if ($settings[0]['sort_override'] == 1) {
 	//exploded from the category table will still be set from before
 }
 
-$files = $db->GetArray("SELECT * FROM ".$dbPrefix."files WHERE file_catid = ".intval($_GET['id'])." ORDER BY file_pin DESC, file_".$sort[0]." ".$sort[1]);
+$files = $db->GetArray("SELECT * FROM ".$dbPrefix."files WHERE file_catid = ".intval(($_GET['id'] ?? ''))." ORDER BY file_pin DESC, file_".$sort[0]." ".$sort[1]);
 
 
-if (!isset($_GET['start'])) { $start = 1; } else { $start = intval($_GET['start']); }
+if (!isset($_GET['start'])) { $start = 1; } else { $start = intval(($_GET['start'] ?? '')); }
 
 
 //Subcategory stuff. PITA!
-$subs = $db->GetArray("SELECT * FROM ".$dbPrefix."cat WHERE cat_parent = ".intval($_GET['id'])." ORDER BY cat_order ASC");
+$subs = $db->GetArray("SELECT * FROM ".$dbPrefix."cat WHERE cat_parent = ".intval(($_GET['id'] ?? ''))." ORDER BY cat_order ASC");
 $smarty->assign('hassubs', count($subs) > 0 ? true : false);
 $smarty->assign('subs', $subs);
 $smarty->assign('subcats', $subs);
@@ -118,8 +118,9 @@ $smarty->assign('order_name', array(lang('descending'), lang('ascending')));
 $smarty->assign('cursort', $sort[0]);
 $smarty->assign('curorder', $sort[1]);
 $smarty->assign('files', $f);
+$smarty->assign('pinned', array()); //no pinned-files list is built any more; keeps the template from reading an unset variable
 $smarty->assign('pages', $pages);
-$smarty->assign('id', $_GET['id']);
+$smarty->assign('id', ($_GET['id'] ?? ''));
 $smarty->assign('count', count($files));
 
 ?>

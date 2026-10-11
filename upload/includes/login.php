@@ -23,20 +23,26 @@ if (isset($_GET['logout'])) {
 $smarty->assign('navbar', array(array('name' => $settings[0]['dbname'], 'url' => ''), array('name' => lang('login'), 'url' => '?act=login')));
 $smarty->assign('title', $settings[0]['dbname'].' &raquo; '.lang('login'));
 
+//Defaults so the template never reads an unset variable
+$smarty->assign('logact', 'login');
+$smarty->assign('qs', '?act=main');
+
 //Process the login
 if (isset($_GET['process'])) {
     $smarty->assign('logact', 'process');
     
     //Check the username and password to make sure they're correct
     $a = array();
-    if (checkpass(xhtml_convert($_POST['username']), md5($_POST['password']), $a)) {
+    $_login_user = isset($_POST['username']) ? (string)($_POST['username'] ?? '') : '';
+    $_login_pass = isset($_POST['password']) ? (string)($_POST['password'] ?? '') : '';
+    if (checkpass(xhtml_convert($_login_user), md5($_login_pass), $a)) {
         if ($a[0]['user_status'] == 2) {
         	smarty_error(lang('please_validate'));
         }
         //Set the cookies and redirect to the main page
-        setcookie('pafiledb_user', $_POST['username'], time()+31536000);
-        setcookie('pafiledb_pass', md5($_POST['password']), time()+31536000);
-        smarty_redirect(lang('acp_login_redir').' '.$_POST['username'], 'index.php'.$_POST['qs']);
+        setcookie('pafiledb_user', $_login_user, time()+31536000);
+        setcookie('pafiledb_pass', md5($_login_pass), time()+31536000);
+        smarty_redirect(lang('acp_login_redir').' '.$_login_user, 'index.php'.(isset($_POST['qs']) ? ($_POST['qs'] ?? '') : ''));
     } else {
         
         //Password is wrong, give them an error.
@@ -54,7 +60,7 @@ if (isset($_GET['process'])) {
         $smarty->assign('qs', '?act=main');
     }*/
     if (isset($_GET['qs'])) {
-    	$smarty->assign('qs', '?'.urldecode($_GET['qs']));
+    	$smarty->assign('qs', '?'.urldecode(($_GET['qs'] ?? '')));
     }
 }
 

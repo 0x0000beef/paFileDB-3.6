@@ -5,7 +5,7 @@
 *                                                              *
 * Author: PHP Arena <http://www.phparena.net>                  *
 * File Version 3.6                                             *
-* Copyright ©2005-2007 PHP Arena. All Rights Reserved.         *
+* Copyright ï¿½2005-2007 PHP Arena. All Rights Reserved.         *
 *                                                              *
 * THIS FILE MAY NOT BE REDISTRIBUTED.                          *
 * For more information, please see the PHP Arena license at:   *
@@ -13,7 +13,7 @@
 ***************************************************************/
 
 if (isset($_GET['img'])) {
-	if ($_GET['img'] == "green") {
+	if (($_GET['img'] ?? '') == "green") {
 		header("Content-type: image/gif");
 		header("Content-length: 396");
 		echo base64_decode(
@@ -25,7 +25,7 @@ if (isset($_GET['img'])) {
 		'BQQqFKg8njpquAOBDfYD/wQTggGzsMDAUjOCkpOCMFhCQRApEUBg8PBhSRAg6QAggUCR4e'.
 		'CRQIkQ4HCJ4eMA0NMBmkCCQVEqANGCoqGA2iEhsaOxkvGCYXFyYYMRkhLQAKOxgzOScnOT'.
 		'MYPWY/LAohBTXUNQU8WU0AOisWIiIWG81CQQA7');
-	} elseif ($_GET['img'] == "grey") {
+	} elseif (($_GET['img'] ?? '') == "grey") {
 		header("Content-type: image/gif");
 		header("Content-length: 409");
 		echo base64_decode(
@@ -37,7 +37,7 @@ if (isset($_GET['img'])) {
 		'YheCxSqcVMsIkNeKJObSBoNAQDNAoiCgU9IxUrFhQUFi4SIT0ZIzsFJjcJODgJOSwFOxkF'.
 		'HzoRCjkXFzkKHqMZJhERORU8CQk8FQGwGAAaARwACAwMDgAVFxodAj0SABAbBAQtEAASGA'.
 		'c+DBMILQQuLgQ2DjsILz8lOBgSBCoqKzwjCChNPgMBPSAgEwrXQkEAOw==');
-	} elseif ($_GET['img'] == "red") {
+	} elseif (($_GET['img'] ?? '') == "red") {
 	    header("Content-type: image/gif");
 		header("Content-length: 402");
 		echo base64_decode(
@@ -169,8 +169,18 @@ switch($step) {
 		or to open a support ticket.</a><p />
 		<?php
 		require("./read_dump.lib.php");
-		$ofile = fopen("./".$_GET['version'].".sql", "r");
-		$contents = fread($ofile, filesize("./".$_GET['version'].".sql"));
+		$_upg_version = isset($_GET['version']) ? (string)($_GET['version'] ?? '') : '';
+		// only allow known upgrade dump files (no path traversal)
+		if (!preg_match('/^\d+(\.\d+)*$/', $_upg_version)) {
+			$_upg_version = '3.5.3';
+		}
+		$_dump_file = "./".$_upg_version.".sql";
+		$ofile = @fopen($_dump_file, "r");
+		if ($ofile === false) {
+			echo '<p /><font color="red">Unable to open upgrade file '.htmlspecialchars($_dump_file, ENT_QUOTES).'.</font>';
+			break;
+		}
+		$contents = fread($ofile, filesize($_dump_file));
 		fclose($ofile);
 		$queries = array();
 		PMA_splitSqlFile($queries, $contents, "thisdoesntmatter");
@@ -178,17 +188,17 @@ switch($step) {
 			$q['query'] =  str_replace("##PREFIX##", $dbPrefix, $q['query']);
 			$db->Execute($q['query']);
 		}
-		if ($_GET['version'] == '3.1') {
+		if ($_upg_version == '3.1') {
 			$db->Execute("UPDATE ".$dbPrefix."files SET file_rating = 0, file_totalvotes = 0");
 			$db->Execute("UPDATE ".$dbPrefix."files SET file_posticon = '' WHERE file_posticon = 'none'");
 		}
-		if (version_compare($_GET['version'], '3.1', '>') && version_compare($_GET['version'], '3.6', '<')) {
+		if (version_compare($_upg_version, '3.1', '>') && version_compare($_upg_version, '3.6', '<')) {
 			$license = $db->GetArray("SELECT * FROM ".$dbPrefix."license");
 			foreach ($license as $l) {
 				$db->Execute("UPDATE ".$dbPrefix."license SET license_text = '".addslashes(base64_decode($l['license_text']))."' WHERE license_id = ".$l['license_id']);
 			}
 		}
-		if (version_compare($_GET['version'], '3.6', '<')) {
+		if (version_compare($_upg_version, '3.6', '<')) {
 			$admins = $db->GetArray("SELECT * FROM ".$dbPrefix."admin");
 			foreach ($admins as $a) {
 				$db->Execute("INSERT INTO ".$dbPrefix."users (user_username, user_password, user_email, user_status) VALUES ('".$a['admin_username']."', '".$a['admin_password']."', '".$a['admin_email']."', ".($a['admin_status']+3).")");

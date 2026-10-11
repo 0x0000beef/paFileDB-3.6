@@ -5,7 +5,7 @@
 *                                                              *
 * Author: PHP Arena <http://www.phparena.net>                  *
 * File Version 3.6                                             *
-* Copyright ©2005-2007 PHP Arena. All Rights Reserved.         *
+* Copyright ï¿½2005-2007 PHP Arena. All Rights Reserved.         *
 *                                                              *
 * THIS FILE MAY NOT BE REDISTRIBUTED.                          *
 * For more information, please see the PHP Arena license at:   *
@@ -13,7 +13,7 @@
 ***************************************************************/
 
 if (isset($_GET['img'])) {
-	if ($_GET['img'] == "green") {
+	if (($_GET['img'] ?? '') == "green") {
 		header("Content-type: image/gif");
 		header("Content-length: 396");
 		echo base64_decode(
@@ -25,7 +25,7 @@ if (isset($_GET['img'])) {
 		'BQQqFKg8njpquAOBDfYD/wQTggGzsMDAUjOCkpOCMFhCQRApEUBg8PBhSRAg6QAggUCR4e'.
 		'CRQIkQ4HCJ4eMA0NMBmkCCQVEqANGCoqGA2iEhsaOxkvGCYXFyYYMRkhLQAKOxgzOScnOT'.
 		'MYPWY/LAohBTXUNQU8WU0AOisWIiIWG81CQQA7');
-	} elseif ($_GET['img'] == "grey") {
+	} elseif (($_GET['img'] ?? '') == "grey") {
 		header("Content-type: image/gif");
 		header("Content-length: 409");
 		echo base64_decode(
@@ -37,7 +37,7 @@ if (isset($_GET['img'])) {
 		'YheCxSqcVMsIkNeKJObSBoNAQDNAoiCgU9IxUrFhQUFi4SIT0ZIzsFJjcJODgJOSwFOxkF'.
 		'HzoRCjkXFzkKHqMZJhERORU8CQk8FQGwGAAaARwACAwMDgAVFxodAj0SABAbBAQtEAASGA'.
 		'c+DBMILQQuLgQ2DjsILz8lOBgSBCoqKzwjCChNPgMBPSAgEwrXQkEAOw==');
-	} elseif ($_GET['img'] == "red") {
+	} elseif (($_GET['img'] ?? '') == "red") {
 	    header("Content-type: image/gif");
 		header("Content-length: 402");
 		echo base64_decode(
@@ -197,7 +197,7 @@ switch($step) {
 		Continue. paFileDB guessed at the installation location, however, you need to verify its
 		accuracy to continue. Do not add a trailing slash at the end.<p />
 		<?php
-		$url = "http://{$_SERVER['HTTP_HOST']}:{$_SERVER['SERVER_PORT']}". $_SERVER['REQUEST_URI'];
+		$url = "http://{$_SERVER['HTTP_HOST']}:{$_SERVER['SERVER_PORT']}". ($_SERVER['REQUEST_URI'] ?? '');
 		$url = str_replace(":80/", "/", $url);
 		if (!(false === strpos($url, "/install/index.php")))
 		{
@@ -216,8 +216,9 @@ switch($step) {
 		<?php
 		break;
 	case 4:
-		$_POST['url'] = preg_replace("/(\/*)$/", "", $_POST['url']);
-		$db->Execute("UPDATE ".$dbPrefix."settings SET dburl = '".$_POST['url']."'");
+		$_install_url = isset($_POST['url']) ? (string)($_POST['url'] ?? '') : '';
+		$_install_url = preg_replace("/(\/*)$/", "", $_install_url);
+		$db->Execute("UPDATE ".$dbPrefix."settings SET dburl = '".addslashes($_install_url)."'");
 		?>
 		Now you need to create an administrator account. Please enter a username, password and e-mail address below
 		to make your first admin account.<p />
@@ -234,10 +235,13 @@ switch($step) {
 		<?php
     	break;
     case 5:
-    	$db->Execute("INSERT INTO ".$dbPrefix."users (user_username, user_password, user_email, user_status) VALUES ('".$_POST['uname']."', '".md5($_POST['pass'])."', '".$_POST['email']."', 6)");
+		$_uname   = isset($_POST['uname']) ? (string)($_POST['uname'] ?? '') : '';
+		$_pass    = isset($_POST['pass']) ? (string)($_POST['pass'] ?? '') : '';
+		$_email   = isset($_POST['email']) ? (string)($_POST['email'] ?? '') : '';
+    	$db->Execute("INSERT INTO ".$dbPrefix."users (user_username, user_password, user_email, user_status) VALUES ('".addslashes($_uname)."', '".md5($_pass)."', '".addslashes($_email)."', 6)");
 		$time = time();
 		$db->Execute("INSERT INTO ".$dbPrefix."adminnews (date, subject, text) VALUES (".$time.", 'Welcome to paFileDB 3.6!', 'Any important news regarding paFileDB will be displayed here whenever you login to your admin center. Be sure to login to your admin center every now and then to read the latest news and make sure paFileDB is up to date.')");
-		$db->Execute("UPDATE ".$dbPrefix."settings SET newest_news = ".$time.", fromemail = '".$_POST['email']."'");
+		$db->Execute("UPDATE ".$dbPrefix."settings SET newest_news = ".$time.", fromemail = '".addslashes($_email)."'");
 		?>
 		You're finished installing paFileDB! In order to use paFileDB, <b>you must delete the "install" directory from your server!</b><p />
 		<div align="center"><a href="../index.php">Your paFileDB Home</a> - <a href="../admin.php">Your paFileDB Admin Center</a><br />It is recommended that you login to your admin center ASAP and change paFileDB's settings to suit your needs.</div>

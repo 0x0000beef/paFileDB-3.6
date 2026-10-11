@@ -24,7 +24,7 @@ if ($stats[0][1] > 0) {
 } else {
 	$avgRating = 0;
 }
-$stats = str_replace(array('%RATING%', '%TOTALFILES%', '%TOTALDLS%'), array($avgRating, $stats[0][2], number_format($stats[0][3])), array(lang('stats_avgrating'), lang('stats_totalfiles'), lang('stats_totaldls')));
+$stats = str_replace(array('%RATING%', '%TOTALFILES%', '%TOTALDLS%'), array($avgRating, $stats[0][2], number_format((float)$stats[0][3])), array(lang('stats_avgrating'), lang('stats_totalfiles'), lang('stats_totaldls')));
 $newest = $db->GetArray("SELECT file_id, file_name, file_time FROM ".$dbPrefix."files ORDER BY file_time DESC LIMIT 0,1");
 
 
@@ -48,13 +48,13 @@ if (count($lowest) > 0) {
 }
 
 $mostdl = $db->GetArray("SELECT file_id, file_name, file_dls FROM ".$dbPrefix."files ORDER BY file_dls DESC LIMIT 0,1");
-$stats[] = str_replace(array('%LINK%', '%DOWNLOADS%'), array('<a href="'.$settings[0]['dburl'].'/index.php?act=view&id='.$mostdl[0]['file_id'].'">'.$mostdl[0]['file_name'].'</a>', number_format($mostdl[0]['file_dls'])), lang('stats_mostdownloaded'));
+$stats[] = str_replace(array('%LINK%', '%DOWNLOADS%'), array('<a href="'.$settings[0]['dburl'].'/index.php?act=view&id='.$mostdl[0]['file_id'].'">'.$mostdl[0]['file_name'].'</a>', number_format((float)$mostdl[0]['file_dls'])), lang('stats_mostdownloaded'));
 
 $leastdl = $db->GetArray("SELECT file_id, file_name, file_dls FROM ".$dbPrefix."files ORDER BY file_dls ASC LIMIT 0,1");
-$stats[] = str_replace(array('%LINK%', '%DOWNLOADS%'), array('<a href="'.$settings[0]['dburl'].'/index.php?act=view&id='.$leastdl[0]['file_id'].'">'.$leastdl[0]['file_name'].'</a>', number_format($leastdl[0]['file_dls'])), lang('stats_leastdownloaded'));
+$stats[] = str_replace(array('%LINK%', '%DOWNLOADS%'), array('<a href="'.$settings[0]['dburl'].'/index.php?act=view&id='.$leastdl[0]['file_id'].'">'.$leastdl[0]['file_name'].'</a>', number_format((float)$leastdl[0]['file_dls'])), lang('stats_leastdownloaded'));
 
 $avgdls = $db->GetArray("SELECT AVG(file_dls) FROM ".$dbPrefix."files");
-$stats[] = str_replace('%DOWNLOADS%', number_format($avgdls[0][0], 3), lang('stats_avgdls'));
+$stats[] = str_replace('%DOWNLOADS%', number_format((float)$avgdls[0][0], 3), lang('stats_avgdls'));
 
 
 $smarty->assign('navbar', array(array('name' => $settings[0]['dbname'], 'url' => ''), array('name' => lang('stats'), 'url' => '?act=stats')));

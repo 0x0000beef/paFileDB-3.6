@@ -175,7 +175,7 @@ class Snoopy
 						$frameurls = $this->_frameurls;
 						$this->_frameurls = array();
 						
-						while(list(,$frameurl) = each($frameurls))
+						foreach($frameurls as $frameurl)
 						{
 							if($this->_framedepth < $this->maxframes)
 							{
@@ -234,7 +234,7 @@ class Snoopy
 					$frameurls = $this->_frameurls;
 					$this->_frameurls = array();
 
-					while(list(,$frameurl) = each($frameurls))
+					foreach($frameurls as $frameurl)
 					{
 						if($this->_framedepth < $this->maxframes)
 						{
@@ -281,13 +281,13 @@ class Snoopy
 
 		// catenate the non-empty matches from the conditional subpattern
 
-		while(list($key,$val) = each($links[2]))
+		foreach((array)($links[2] ?? array()) as $key => $val)
 		{
 			if(!empty($val))
 				$match[] = $val;
 		}				
 		
-		while(list($key,$val) = each($links[3]))
+		foreach((array)($links[3] ?? array()) as $key => $val)
 		{
 			if(!empty($val))
 				$match[] = $val;
@@ -454,7 +454,7 @@ class Snoopy
 		{
 			if(!is_array($this->rawheaders))
 				$this->rawheaders = (array)$this->rawheaders;
-			while(list($headerKey,$headerVal) = each($this->rawheaders))
+			foreach($this->rawheaders as $headerKey => $headerVal)
 				$headers .= $headerKey.": ".$headerVal."\r\n";
 		}
 		if(!empty($content_type)) {
@@ -625,7 +625,7 @@ class Snoopy
 		{
 			if(!is_array($this->rawheaders))
 				$this->rawheaders = (array)$this->rawheaders;
-			while(list($headerKey,$headerVal) = each($this->rawheaders))
+			foreach($this->rawheaders as $headerKey => $headerVal)
 				$headers[] = $headerKey.": ".$headerVal;
 		}
 		if(!empty($content_type)) {
@@ -844,10 +844,9 @@ class Snoopy
 		
 		switch ($this->_submit_type) {
 			case "application/x-www-form-urlencoded":
-				reset($formvars);
-				while(list($key,$val) = each($formvars)) {
+				foreach($formvars as $key => $val) {
 					if (is_array($val) || is_object($val)) {
-						while (list($cur_key, $cur_val) = each($val)) {
+						foreach ((array)$val as $cur_key => $cur_val) {
 							$postdata .= urlencode($key)."[]=".urlencode($cur_val)."&";
 						}
 					} else
@@ -859,9 +858,9 @@ class Snoopy
 				$this->_mime_boundary = "Snoopy".md5(uniqid(microtime()));
 				
 				reset($formvars);
-				while(list($key,$val) = each($formvars)) {
+				foreach($formvars as $key => $val) {
 					if (is_array($val) || is_object($val)) {
-						while (list($cur_key, $cur_val) = each($val)) {
+						foreach ((array)$val as $cur_key => $cur_val) {
 							$postdata .= "--".$this->_mime_boundary."\r\n";
 							$postdata .= "Content-Disposition: form-data; name=\"$key\[\]\"\r\n\r\n";
 							$postdata .= "$cur_val\r\n";
@@ -873,10 +872,9 @@ class Snoopy
 					}
 				}
 				
-				reset($formfiles);
-				while (list($field_name, $file_names) = each($formfiles)) {
+				foreach($formfiles as $field_name => $file_names) {
 					settype($file_names, "array");
-					while (list(, $file_name) = each($file_names)) {
+					foreach ($file_names as $file_name) {
 						if (!is_readable($file_name)) continue;
 
 						$fp = fopen($file_name, "r");

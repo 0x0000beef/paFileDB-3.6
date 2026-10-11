@@ -3,7 +3,7 @@
 *                                                                 *
 * Author: PHP Arena <http://www.phparena.net>                     *
 * File Version 3.6                                                *
-* Copyright ©2005-2007 PHP Arena. All Rights Reserved.            *
+* Copyright ï¿½2005-2007 PHP Arena. All Rights Reserved.            *
 *                                                                 *
 * THIS FILE MAY NOT BE REDISTRIBUTED.                             *
 * For more information, please see the PHP Arena license at:      *
@@ -32,7 +32,7 @@
 	{rdelim});
 </script>
 {/if}
-{if $c == delete}
+{if $c == "delete"}
 <table width="75%" border="1" align="center" cellpadding="3" cellspacing="0" class="border">
   <tr class="sectionheader">
 	<td width="100%">
@@ -53,7 +53,7 @@
 	</td>
   </tr>
 </table>
-{elseif $c == edit}
+{elseif $c == "edit"}
 	<form action="{$settings.dburl}/index.php?act=comments&c=edit&id={$comment.comment_id}&process" method="post">
 	<table width="75%" border="1" align="center" cellpadding="3" cellspacing="0" class="border">
 	  <tr class="sectionheader">
@@ -77,7 +77,7 @@
 	  </tr>
 	</table>
 	</form>
-{elseif $c == ajaxedit}
+{elseif $c == "ajaxedit"}
 	<table width="75%" border="1" align="center" cellpadding="3" cellspacing="0" class="border">
 	  <tr class="sectionheader">
 		<td width="100%" colspan="2">

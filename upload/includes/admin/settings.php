@@ -19,37 +19,37 @@ if (isset($_GET['process'])) {
         smarty_error(lang('emptyfield'));
     }
     
-    $_POST['dburl'] = preg_replace("/(\/*)$/", "", $_POST['dburl']);
+    $_POST['dburl'] = preg_replace("/(\/*)$/", "", ($_POST['dburl'] ?? ''));
     
     //Update the DB
     $db->Execute("UPDATE ".$dbPrefix."settings SET
-                  skin = '".$_POST['skin']."',
-                  lang = '".$_POST['lang']."',
-                  dbname = '".xhtml_convert($_POST['dbname'])."',
-                  dburl = '".$_POST['dburl']."',
-                  topnumber = ".intval($_POST['topnumber']).",
-                  homeurl = '".$_POST['homeurl']."',
-                  timeoffset = ".$_POST['timeoffset'].",
-                  timezone = '".xhtml_convert($_POST['timezone'])."',
-                  viewall = ".intval($_POST['viewall']).",
-                  quickdl = ".intval($_POST['quickdl']).",
-                  showss = ".intval($_POST['showss']).",
-                  stats = ".intval($_POST['stats']).",
-                  dbstats = ".intval($_POST['dbstats']).",
-                  fromemail = '".xhtml_convert($_POST['fromemail'])."',
-                  validateemail = ".intval($_POST['validateemail']).",
-                  enable_comments = ".intval($_POST['enable_comments']).",
-                  display_tags = ".intval($_POST['display_tags']).",
-                  guest_comments = ".intval($_POST['guest_comments']).",
-                  comments_perpage = ".intval($_POST['comments_perpage']).",
-                  enable_registration = ".intval($_POST['enable_registration']).",
-                  require_registration = ".intval($_POST['require_registration']).",
-                  enable_email = ".intval($_POST['enable_email']).",
-                  enable_report = ".intval($_POST['enable_report']).",
-                  perpage = ".intval($_POST['perpage']).",
-                  sort_override = ".intval($_POST['sort_override']).",
-                  date_format = '".xhtml_convert($_POST['date_format'])."',
-                  time_format = '".xhtml_convert($_POST['time_format'])."'");
+                  skin = '".($_POST['skin'] ?? '')."',
+                  lang = '".($_POST['lang'] ?? '')."',
+                  dbname = '".xhtml_convert(($_POST['dbname'] ?? ''))."',
+                  dburl = '".($_POST['dburl'] ?? '')."',
+                  topnumber = ".intval(($_POST['topnumber'] ?? '')).",
+                  homeurl = '".($_POST['homeurl'] ?? '')."',
+                  timeoffset = ".($_POST['timeoffset'] ?? '').",
+                  timezone = '".xhtml_convert(($_POST['timezone'] ?? ''))."',
+                  viewall = ".intval(($_POST['viewall'] ?? '')).",
+                  quickdl = ".intval(($_POST['quickdl'] ?? '')).",
+                  showss = ".intval(($_POST['showss'] ?? '')).",
+                  stats = ".intval(($_POST['stats'] ?? '')).",
+                  dbstats = ".intval(($_POST['dbstats'] ?? '')).",
+                  fromemail = '".xhtml_convert(($_POST['fromemail'] ?? ''))."',
+                  validateemail = ".intval(($_POST['validateemail'] ?? '')).",
+                  enable_comments = ".intval(($_POST['enable_comments'] ?? '')).",
+                  display_tags = ".intval(($_POST['display_tags'] ?? '')).",
+                  guest_comments = ".intval(($_POST['guest_comments'] ?? '')).",
+                  comments_perpage = ".intval(($_POST['comments_perpage'] ?? '')).",
+                  enable_registration = ".intval(($_POST['enable_registration'] ?? '')).",
+                  require_registration = ".intval(($_POST['require_registration'] ?? '')).",
+                  enable_email = ".intval(($_POST['enable_email'] ?? '')).",
+                  enable_report = ".intval(($_POST['enable_report'] ?? '')).",
+                  perpage = ".intval(($_POST['perpage'] ?? '')).",
+                  sort_override = ".intval(($_POST['sort_override'] ?? '')).",
+                  date_format = '".xhtml_convert(($_POST['date_format'] ?? ''))."',
+                  time_format = '".xhtml_convert(($_POST['time_format'] ?? ''))."'");
     smarty_redirect(lang('acp_settings_redir'), 'admin.php?act=main');
 } else {
     

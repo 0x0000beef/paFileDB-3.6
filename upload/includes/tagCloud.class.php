@@ -232,7 +232,7 @@ class tagCloud {
 
 
 
-function tagCloud ($KA,$R=3,$IPR=10,$TC="#0000FF",$FT="Arial",$MinFS=10,$MaxFS=20,$SPBI=5,$LUP='index.php?act=viewtag&tag=',$ANTP=1,$BC="#FFFFFF",$TID="MyTagCloud",$BW=0,$SA=0,$RTL=0) {
+function __construct ($KA,$R=3,$IPR=10,$TC="#0000FF",$FT="Arial",$MinFS=10,$MaxFS=20,$SPBI=5,$LUP='index.php?act=viewtag&tag=',$ANTP=1,$BC="#FFFFFF",$TID="MyTagCloud",$BW=0,$SA=0,$RTL=0) {
 
 
 // init default values 
@@ -291,7 +291,9 @@ $this->HtmlStr = ''  ;
  $this->minTagValue = min($this->KeywordsArray);
  $this->maxTagValue = max($this->KeywordsArray);
  
- $this->FontRatio = ($this->MaxFontSize - $this->MinFontSize) / ($this->maxTagValue -  $this->minTagValue)  ;
+ $this->FontRatio = ($this->maxTagValue > $this->minTagValue)
+     ? ($this->MaxFontSize - $this->MinFontSize) / ($this->maxTagValue -  $this->minTagValue)
+     : 0;
  $this->FontOffset = $this->MaxFontSize -  ($this->FontRatio * $this->maxTagValue );
  
  

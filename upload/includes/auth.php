@@ -61,7 +61,7 @@ $guestArray = array(array('user_userid' => 0, 'user_username' => lang('guest'), 
 if (isset($_COOKIE['pafiledb_user']) && isset($_COOKIE['pafiledb_pass'])) { //If the cookie exists, do all this:
     
     $userinfo = array();
-    if (checkpass($_COOKIE['pafiledb_user'], $_COOKIE['pafiledb_pass'], $userinfo)) {
+    if (checkpass(($_COOKIE['pafiledb_user'] ?? ''), ($_COOKIE['pafiledb_pass'] ?? ''), $userinfo)) {
         //checkpass() returned true, so the user exists
         
         //$adminloggedin is a var used throughout the script to see if someone's logged in.

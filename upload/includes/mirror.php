@@ -13,12 +13,12 @@
 ***************************************************************/
 
 if ($settings[0]['require_registration'] == 2 && $userinfo[0]['user_userid'] == 0) {
-	$logreg = '<br /><br /><a href="'.$settings[0]['dburl'].'/index.php?act=login&qs='.urlencode($_SERVER['QUERY_STRING']).'">'.lang('login').'</a> - <a href="'.$settings[0]['dburl'].'/index.php?act=register">'.lang('register').'</a>';
+	$logreg = '<br /><br /><a href="'.$settings[0]['dburl'].'/index.php?act=login&qs='.urlencode(($_SERVER['QUERY_STRING'] ?? '')).'">'.lang('login').'</a> - <a href="'.$settings[0]['dburl'].'/index.php?act=register">'.lang('register').'</a>';
 	smarty_error(lang('login_download').$logreg);
 }     
 
 //Fetch the file info from the database
-$file = $db->GetArray("SELECT * FROM ".$dbPrefix."files WHERE file_id = ".intval($_GET['id']));
+$file = $db->GetArray("SELECT * FROM ".$dbPrefix."files WHERE file_id = ".intval(($_GET['id'] ?? '')));
 if (count($file) == 0) {
 
     smarty_error(lang('file_exist'));
@@ -29,7 +29,7 @@ $file = $file[0];
 // system resources.
 $navbar = array();
 $navbar[] = array('name' => lang('select_mirror'), 'url' => '');
-$navbar[] = array('name' => $file['file_name'], 'url' => '?act=view&amp;id='.intval($_GET['id']));
+$navbar[] = array('name' => $file['file_name'], 'url' => '?act=view&amp;id='.intval(($_GET['id'] ?? '')));
 $allcats = unserialize($settings[0]['dropdown']);
 $tempcat = $file['file_catid'];
 $templvl = -1; // 0 = start. We need to identify that this hasn't been set so -1 works :)

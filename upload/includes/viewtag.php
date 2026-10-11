@@ -22,11 +22,11 @@ if ($settings[0]['sort_override'] == 1) {
 	if (isset($_GET['sort'])) {
 		$sort[0] = $_POST['sortby'];
 		$sort[1] = $_POST['order'];
-		setcookie('pafiledb_sort', $_POST['sortby'].'|'.$_POST['order'], time()+63072000);
+		setcookie('pafiledb_sort', ($_POST['sortby'] ?? '').'|'.($_POST['order'] ?? ''), time()+63072000);
 	}
 	//No options submitted, pull from existing cookie if it exists
 	else if (isset($_COOKIE['pafiledb_sort'])) {
-		$sort = explode('|', $_COOKIE['pafiledb_sort']);
+		$sort = explode('|', ($_COOKIE['pafiledb_sort'] ?? ''));
 	}
 	//Prevent SQL injections and whatnot by making sure the user's sort optiosn only match what's allowed
 	if (!in_array($sort[0], array('name', 'dls', 'time')) OR !in_array($sort[1], array('DESC', 'ASC'))) {
@@ -36,13 +36,13 @@ if ($settings[0]['sort_override'] == 1) {
 	//exploded from the category table will still be set from before
 }
 
-$files = $db->GetArray("SELECT * FROM ".$dbPrefix."files WHERE file_tags LIKE '% ".smart_slashes($_GET['tag'])." %' OR file_tags LIKE '".smart_slashes($_GET['tag'])." %' OR file_tags LIKE '% ".smart_slashes($_GET['tag'])."' ORDER BY file_pin DESC, file_".$sort[0]." ".$sort[1]);
+$files = $db->GetArray("SELECT * FROM ".$dbPrefix."files WHERE file_tags LIKE '% ".smart_slashes(($_GET['tag'] ?? ''))." %' OR file_tags LIKE '".smart_slashes(($_GET['tag'] ?? ''))." %' OR file_tags LIKE '% ".smart_slashes(($_GET['tag'] ?? ''))."' ORDER BY file_pin DESC, file_".$sort[0]." ".$sort[1]);
 
 
-if (!isset($_GET['start'])) { $start = 1; } else { $start = intval($_GET['start']); }
+if (!isset($_GET['start'])) { $start = 1; } else { $start = intval(($_GET['start'] ?? '')); }
 
-$smarty->assign('navbar', array(array('name' => $settings[0]['dbname'], 'url' => ''), array('name' => lang('view_tag').": ".$_GET['tag'], 'url' => '?act=viewall')));
-$smarty->assign('title', $settings[0]['dbname']." &raquo; ".lang('view_tag').": ".$_GET['tag']);
+$smarty->assign('navbar', array(array('name' => $settings[0]['dbname'], 'url' => ''), array('name' => lang('view_tag').": ".($_GET['tag'] ?? ''), 'url' => '?act=viewall')));
+$smarty->assign('title', $settings[0]['dbname']." &raquo; ".lang('view_tag').": ".($_GET['tag'] ?? ''));
 
 foreach ($files as $k => $v) {
   $files[$k]['file_time'] = $files[$k]['file_time'] + ($settings[0]['timeoffset']*3600);
@@ -68,6 +68,7 @@ $smarty->assign('order_name', array(lang('descending'), lang('ascending')));
 $smarty->assign('cursort', $sort[0]);
 $smarty->assign('curorder', $sort[1]);
 $smarty->assign('files', $f);
+$smarty->assign('pinned', array()); //no pinned-files list is built any more; keeps the template from reading an unset variable
 $smarty->assign('pages', $pages);
 $smarty->assign('count', count($files));
 

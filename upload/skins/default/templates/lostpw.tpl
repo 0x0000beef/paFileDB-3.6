@@ -3,7 +3,7 @@
 *                                                                 *
 * Author: PHP Arena <http://www.phparena.net>                     *
 * File Version 3.6                                                *
-* Copyright ©2005-2007 PHP Arena. All Rights Reserved.            *
+* Copyright ï¿½2005-2007 PHP Arena. All Rights Reserved.            *
 *                                                                 *
 * THIS FILE MAY NOT BE REDISTRIBUTED.                             *
 * For more information, please see the PHP Arena license at:      *
@@ -15,7 +15,7 @@
 * http://smarty.phparena.net                                      *
 ******************************************************************}
 
-{if $act == process} 
+{if $act == "process"} 
 	<table width="75%" border="1" align="center" cellpadding="3" cellspacing="0" class="border">
     <tr class="sectionheader">
       <td> {#lost_password#}</td>
@@ -24,7 +24,7 @@
       <td>{#lost_password_checkemail#|replace:'%EMAIL%':$user.user_email}</td>
     </tr>
     </table>
-{elseif $act == reset}
+{elseif $act == "reset"}
 <form action="{$settings.dburl}/index.php?act=lostpw&amp;processreset&amp;userid={$user.user_userid}&key={$key}" method="post">
 <table width="75%" border="1" align="center" cellpadding="3" cellspacing="0" class="border">
   <tr class="sectionheader">
@@ -52,7 +52,7 @@
   </tr>
 </table>
 </form>
-{elseif $act == processreset}
+{elseif $act == "processreset"}
 
 {else}  
     <form action="{$settings.dburl}/index.php?act=lostpw&amp;process" method="post">

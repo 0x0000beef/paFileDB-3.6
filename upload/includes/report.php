@@ -18,7 +18,7 @@ if ($settings[0]['enable_report'] == 0) {
 }
 
 //Get file info
-$file = $db->GetArray("SELECT * FROM ".$dbPrefix."files WHERE file_id = ".intval($_GET['id']));
+$file = $db->GetArray("SELECT * FROM ".$dbPrefix."files WHERE file_id = ".intval(($_GET['id'] ?? '')));
 if (count($file) == 0) {
     smarty_error(lang('file_exist'));
 }
@@ -31,20 +31,20 @@ if (isset($_GET['process'])) {
     }
     
     //Make sure the "from" address is valid
-    if (!eregi('^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.([a-zA-Z]{2,4})$', $_POST['fromemail'])) {
+    if (!preg_match('~^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.([a-zA-Z]{2,4})$~i', ($_POST['fromemail'] ?? ''))) {
         smarty_error(lang('emailinvalid'));
     }
-    $usermessage = trim($_POST['message']);
-    $message = $_POST['fromname'].'('.$_POST['fromemail'].') has reported a broken link at '.$settings[0]['dbname'].".\n\n";
+    $usermessage = trim(($_POST['message'] ?? ''));
+    $message = $_POST['fromname'].'('.($_POST['fromemail'] ?? '').') has reported a broken link at '.$settings[0]['dbname'].".\n\n";
     $message .= "File: ".$file['file_name']."\n";
     $message .= "Please visit this link to view the file:\n";
-    $message .= $settings[0]['dburl'].'/index.php?act=view&id='.$_GET['id']."\n\n";
+    $message .= $settings[0]['dburl'].'/index.php?act=view&id='.($_GET['id'] ?? '')."\n\n";
     $message.= "If you have verified that the link is broken, you may edit the download URL in the paFileDB admin center at ".$settings[0]['dburl']."/admin.php\n\n";
     if (!empty($usermessage)) {
         $message .= $_POST['fromname']." has included this message:\n";
         $message .= $usermessage."\n\n";
     }
-    $message .= "The IP address of the person who reported the broken link is: ".$_SERVER['REMOTE_ADDR']."\n\n";
+    $message .= "The IP address of the person who reported the broken link is: ".($_SERVER['REMOTE_ADDR'] ?? '')."\n\n";
     $message .= "Please note that ".$settings[0]['dbname']." cannot be held responsible for the contents of this message. To report abuse, please visit ".$settings[0]['dburl'];
     
     $to = array();
@@ -52,18 +52,18 @@ if (isset($_GET['process'])) {
     foreach ($admins as $a) {
         $to[] = array("name" => $a['admin_username'], "address" => $a['admin_email']);
     }
-    pafiledb_mail($_POST['fromname'], $_POST['fromemail'], $to, 'Broken link reported at '.$settings[0]['dbname'], $message);
+    pafiledb_mail(($_POST['fromname'] ?? ''), ($_POST['fromemail'] ?? ''), $to, 'Broken link reported at '.$settings[0]['dbname'], $message);
 
-    smarty_redirect(lang('report_sent'), 'index.php?act=view&amp;id='.$_GET['id']);
+    smarty_redirect(lang('report_sent'), 'index.php?act=view&amp;id='.($_GET['id'] ?? ''));
 }
 
-$smarty->assign('id', $_GET['id']);
+$smarty->assign('id', ($_GET['id'] ?? ''));
 //Fetch the category info from the database
 // Generate the navbar. We're using the dropdown cache to save
 // system resources.
 $navbar = array();
 $navbar[] = array('name' => lang('report_broken'), 'url' => '');
-$navbar[] = array('name' => $file['file_name'], 'url' => '?act=view&amp;id='.intval($_GET['id']));
+$navbar[] = array('name' => $file['file_name'], 'url' => '?act=view&amp;id='.intval(($_GET['id'] ?? '')));
 $allcats = unserialize($settings[0]['dropdown']);
 $tempcat = $file['file_catid'];
 $templvl = -1; // 0 = start. We need to identify that this hasn't been set so -1 works :)

@@ -12,14 +12,14 @@
 ***************************************************************/
 
 //Thanks to MenthiX and markg85 from the PHP Arena forums for the rating exploit fix
-if (isset($_GET['rate']) && ($_POST['rating'] > 0 && $_POST['rating'] <= 5 && intval($_POST['rating']) == true)) { //Rate file  
+if (isset($_GET['rate']) && (($_POST['rating'] ?? '') > 0 && ($_POST['rating'] ?? '') <= 5 && intval(($_POST['rating'] ?? '')) == true)) { //Rate file  
     
     /* So users can't rate files more than once, paFileDB sends them a cookie that
     keeps track of what files they rated. This code updates the cookie. */
     $rated_array = array();
     if (isset($_COOKIE['pafiledb_rate'])) {
-        $rated_array = explode('|', $_COOKIE['pafiledb_rate']);
-        if (in_array($_GET['id'], $rated_array)) {
+        $rated_array = explode('|', ($_COOKIE['pafiledb_rate'] ?? ''));
+        if (in_array(($_GET['id'] ?? ''), $rated_array)) {
             smarty_error(lang('rate_error'));
         }
     }
@@ -32,16 +32,16 @@ if (isset($_GET['rate']) && ($_POST['rating'] > 0 && $_POST['rating'] <= 5 && in
     That number is then divided by the number of times the file was rated.
     24 / 7 is 3.42857, and is then rounded to 3.5 to display 3 and a half stars
     on the page. */
-    $db->Execute("UPDATE ".$dbPrefix."files SET file_rating = file_rating + ".intval($_POST['rating']).", file_totalvotes = file_totalvotes + 1 WHERE file_id = ".intval($_GET['id']));
+    $db->Execute("UPDATE ".$dbPrefix."files SET file_rating = file_rating + ".intval(($_POST['rating'] ?? '')).", file_totalvotes = file_totalvotes + 1 WHERE file_id = ".intval(($_GET['id'] ?? '')));
     
     $rated_array[] = $_GET['id'];
     setcookie('pafiledb_rate', implode('|', $rated_array), time()+63072000);
-    smarty_redirect(lang('rate_redir'), 'index.php?act=view&amp;id='.$_GET['id']);
+    smarty_redirect(lang('rate_redir'), 'index.php?act=view&amp;id='.($_GET['id'] ?? ''));
 
 }
 
 //Fetch the file info from the database
-$file = $db->GetArray("SELECT * FROM ".$dbPrefix."files WHERE file_id = ".intval($_GET['id']));
+$file = $db->GetArray("SELECT * FROM ".$dbPrefix."files WHERE file_id = ".intval(($_GET['id'] ?? '')));
 if (count($file) == 0) {
 
     smarty_error(lang('file_exist'));
@@ -132,8 +132,8 @@ for ($j=0; $j<$remaining; $j++)
 they didn't, we tell Smarty so it can show the rating dropdown menu */
 $already_rated = false;
 if (isset($_COOKIE['pafiledb_rate'])) {
-    $rated_q = explode('|', $_COOKIE['pafiledb_rate']);
-    if (in_array($_GET['id'], $rated_q)) {
+    $rated_q = explode('|', ($_COOKIE['pafiledb_rate'] ?? ''));
+    if (in_array(($_GET['id'] ?? ''), $rated_q)) {
       $already_rated = true;
     }
 }
@@ -162,10 +162,10 @@ if (is_array($mirrors)) {
 } else {
     $smarty->assign('has_mirrors', false);
 }
-$custom = $db->GetArray("SELECT * FROM ".$dbPrefix."customdata LEFT JOIN ".$dbPrefix."custom ON ".$dbPrefix."customdata.customdata_custom = ".$dbPrefix."custom.custom_id WHERE customdata_file = ".intval($_GET['id'])." ORDER BY customdata_custom ASC");
+$custom = $db->GetArray("SELECT * FROM ".$dbPrefix."customdata LEFT JOIN ".$dbPrefix."custom ON ".$dbPrefix."customdata.customdata_custom = ".$dbPrefix."custom.custom_id WHERE customdata_file = ".intval(($_GET['id'] ?? ''))." ORDER BY customdata_custom ASC");
 
-if (!isset($_GET['start'])) { $start = 1; } else { $start = intval($_GET['start']); }
-$comments = $db->GetArray("SELECT * FROM ".$dbPrefix."comments LEFT JOIN ".$dbPrefix."users ON ".$dbPrefix."comments.comment_userid = ".$dbPrefix."users.user_userid WHERE comment_fileid = ".intval($_GET['id'])." ORDER BY comment_time ASC");
+if (!isset($_GET['start'])) { $start = 1; } else { $start = intval(($_GET['start'] ?? '')); }
+$comments = $db->GetArray("SELECT * FROM ".$dbPrefix."comments LEFT JOIN ".$dbPrefix."users ON ".$dbPrefix."comments.comment_userid = ".$dbPrefix."users.user_userid WHERE comment_fileid = ".intval(($_GET['id'] ?? ''))." ORDER BY comment_time ASC");
 list($c, $pages) = paginate($comments, $start, $settings[0]['comments_perpage']);
 
 if ($settings[0]['enable_comments'] == 0) {
@@ -191,13 +191,14 @@ Try again when Leopard comes around and maybe I'll remove this code
 Camino > *
 
 */
-if(eregi("safari", $_SERVER['HTTP_USER_AGENT'])){
+if(preg_match('~safari~i', ($_SERVER['HTTP_USER_AGENT'] ?? ''))){
 	$isSafari = true;
 } else {
 	$isSafari = false;
 }
 $smarty->assign('isSafari', $isSafari);
 $smarty->assign('enablecomments', $enableComments);
+$smarty->assign('hidediv', false); //comment.tpl hides its wrapper div only when ajax-driven
 $smarty->assign('custom', $custom);
 $smarty->assign('file', $file);
 $smarty->assign('stars', $stars);
