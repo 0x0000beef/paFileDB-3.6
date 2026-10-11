@@ -1,2 +1,2 @@
 This is fork of original pafiledb with some changes. 
-Now script succesfully installs under v5 of mysql and supports utf-8 Cyrillic chars.
+Now script succesfully installs under actual PHP env and supports utf-8 Cyrillic chars.
