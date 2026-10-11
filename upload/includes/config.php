@@ -15,7 +15,7 @@
 /* Database Configuration */
 
 /* Database driver to use. Any ADOdb driver can be used, however, only mysql and mysqli have been tested and included with paFileDB. If you don't know what to put here, you should leave it as mysql */
-$dbDriver = "mysql";
+$dbDriver = "mysqli";
 
 /* Database server to connect to. */
 $dbServer = "dbserver";
@@ -53,7 +53,7 @@ $disallowedExtensions = "php php3 php4 php5 phtml shtml fcgi cgi pl asp aspx jsp
 
 
 /* DO NOT CHANGE ANYTHING BELOW THIS LINE */
-$db = &ADONewConnection($dbDriver);
+$db = ADONewConnection($dbDriver);
 if ($dbPConnect) {
 	$db->PConnect($dbServer, $dbUser, $dbPass, $dbName);
 } else {
